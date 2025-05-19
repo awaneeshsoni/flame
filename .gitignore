@@ -1,0 +1,30 @@
+# Node modules (for both client and server)
+client/node_modules/
+server/node_modules/
+
+# Build outputs
+client/dist/
+server/dist/
+client/build/
+server/build/
+
+# Logs
+*.log
+
+# Environment variables
+client/.env
+server/.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific
+.vscode/
+.idea/
+
+# Optional: skip test coverage or cache
+client/coverage/
+server/coverage/
+client/.cache/
+server/.cache/
