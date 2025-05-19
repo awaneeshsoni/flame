@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import CreateWorkspaceModal from "../components/createWorkspaceModel";
+import CreateWorkspaceModal from "../components/CreateWorkspaceModel";
 import Footer from "../components/Footer";
 import { FaChevronDown, FaEye, FaEyeSlash } from "react-icons/fa";
 const API = import.meta.env.VITE_API_URL;

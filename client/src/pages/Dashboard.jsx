@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CreateWorkspaceModal from "../components/createWorkspaceModel";
+import CreateWorkspaceModal from "../components/CreateWorkspaceModel";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 const API = import.meta.env.VITE_API_URL;

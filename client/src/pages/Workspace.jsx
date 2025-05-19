@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import UploadVideoModal from "../components/UploadVideoModel";
-import CreateWorkspaceModal from "../components/createWorkspaceModel";
+import CreateWorkspaceModal from "../components/CreateWorkspaceModel";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 
@@ -76,7 +76,6 @@ function Workspace() {
                 <Navbar />
             </div>
             <div className="flex min-h-screen flex-col bg-[#0f172a] text-white">
-
                 <nav className="md:hidden flex justify-between items-center p-4 bg-[#1e293b] sticky top-0 z-50">
                     <button onClick={() => setShowLeftSidebar(!showLeftSidebar)} className="text-white">
                         <svg
