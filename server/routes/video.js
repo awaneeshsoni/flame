@@ -6,7 +6,7 @@ import Workspace from '../Models/Workspace.js';
 import { configDotenv } from "dotenv";
 import multer from "multer";
 import mongoose from "mongoose";
-import { uploadFileToAzure, deleteFileFromAzure } from "../Utils/azureConfig.js"
+import { uploadToR2, deleteFromR2 } from "../Utils/cloudflareConfig.js"
 
 configDotenv();
 const router = express.Router();
@@ -121,64 +121,81 @@ router.post('/:id/comments', async (req, res) => {
     }
 });
 
-
 router.post("/upload", authMiddleware, uploadStrategy, async (req, res) => {
-    try {
-        const user = await User.findById(req.user.userId);
-        if (!user) return res.status(400).json({ message: "User not found." });
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(400).json({ message: "User not found." });
 
-        const { workspaceId } = req.body;
-        if (!workspaceId) return res.status(400).json({ message: "Workspace ID is required." });
+    const { workspaceId } = req.body;
+    if (!workspaceId)
+      return res.status(400).json({ message: "Workspace ID is required." });
 
-        const workspace = await Workspace.findById(workspaceId);
-        if (!workspace) return res.status(404).json({ message: "Workspace not found" });
+    const workspace = await Workspace.findById(workspaceId);
+    if (!workspace)
+      return res.status(404).json({ message: "Workspace not found" });
 
-        if (!workspace.members.includes(req.user.userId) && workspace.creator.toString() !== req.user.userId) {
-            return res.status(403).json({ message: "Access denied. Only workspace members and the creator can upload videos." });
-        }
+    const isAuthorized =
+      workspace.members.includes(req.user.userId) ||
+      workspace.creator.toString() === req.user.userId;
+    if (!isAuthorized)
+      return res.status(403).json({
+        message:
+          "Access denied. Only workspace members and the creator can upload videos.",
+      });
 
-        if (!req.file) {
-            return res.status(400).send('No video file uploaded.');
-        }
-
-        const blobUrl = await uploadFileToAzure(req.file.buffer, req.file.originalname, req.file.mimetype);
-        const video = new Video({
-            title: req.file.originalname,
-            url: blobUrl,
-            workspace: workspaceId,
-            uploader: user._id,
-        });
-        await video.save();
-        res.json({ message: "Video uploaded successfully", video });
-    } catch (error) {
-        console.error("Error uploading video:", error);
-        res.status(500).json({ message: "Failed to upload video.", error: error.message });
+    if (!req.file) {
+      return res.status(400).send("No video file uploaded.");
     }
+
+    const r2Key = `videos/${Date.now()}_${req.file.originalname}`;
+    const blobUrl = await uploadToR2(r2Key, req.file.buffer, req.file.mimetype);
+
+    const video = new Video({
+      title: req.file.originalname,
+      url: blobUrl,
+      r2Key: r2Key,
+      workspace: workspaceId,
+      uploader: user._id,
+    });
+
+    await video.save();
+    res.json({ message: "Video uploaded successfully", video });
+  } catch (error) {
+    console.error("Error uploading video:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to upload video.", error: error.message });
+  }
 });
 
 router.delete("/delete/:videoId", authMiddleware, async (req, res) => {
-    try {
-        const video = await Video.findById(req.params.videoId).populate('workspace');
-        if (!video) {
-            return res.status(404).json({ message: "Video not found." });
-        }
-    
-        const workspace = video.workspace;
-        const isCreator = workspace.creator.equals(req.user._id);
-        const isMember = workspace.members.includes(req.user._id);
-        if (!isCreator && !isMember) {
-          return res.status(403).json({ message: 'Unauthorized to delete this video.' });
-        }
-        await deleteFileFromAzure(video.url);
-        await Video.findByIdAndDelete(req.params.videoId);
-    
-    
-        res.status(200).json({ message: 'Video deleted successfully.' });
-        } catch (error) {
-            console.error('Error deleting video:', error);
-            res.status(500).json({ message: 'Error deleting video.' });
-        }
-});
+  try {
+    const video = await Video.findById(req.params.videoId).populate("workspace");
+    if (!video) {
+      return res.status(404).json({ message: "Video not found." });
+    }
 
+    const workspace = video.workspace;
+    const isCreator = workspace.creator.equals(req.user._id);
+    const isMember = workspace.members.includes(req.user._id);
+
+    if (!isCreator && !isMember) {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized to delete this video." });
+    }
+
+    if (video.r2Key) {
+      await deleteFromR2(video.r2Key);
+    }
+
+    await Video.findByIdAndDelete(req.params.videoId);
+
+    res.status(200).json({ message: "Video deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting video:", error);
+    res.status(500).json({ message: "Error deleting video." });
+  }
+});
 
 export default router;

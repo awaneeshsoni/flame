@@ -1,5 +1,5 @@
 import { BlobServiceClient } from "@azure/storage-blob"
-import { configDotenv } from 'dotenv';
+import { configDotenv } from 'dotenv'
 
 configDotenv();
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
@@ -15,7 +15,6 @@ const containerClient = blobServiceClient.getContainerClient(AZURE_STORAGE_CONTA
 export async function uploadFileToAzure(fileBuffer, fileName, fileMimeType) {
     const blobName = 'video-' + Date.now() + '-' + fileName;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
     await blockBlobClient.upload(fileBuffer, fileBuffer.length, {
         blobHTTPHeaders: { blobContentType: fileMimeType },
     });

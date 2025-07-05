@@ -19,7 +19,7 @@ router.get("/", authMiddleware, async (req, res) => {
 router.get("/:id", authMiddleware, async (req, res) => {
     try {
         const workspace = await Workspace.findById({ _id: req.params.id })
-            .populate('members', 'name email username profilePicture') 
+            .populate('members', 'name email username ') 
             .populate('videos', 'title url')
             .populate('creator', 'name email username ');
         res.json(workspace);

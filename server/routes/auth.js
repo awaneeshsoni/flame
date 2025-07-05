@@ -8,7 +8,7 @@ const router = express.Router();
 
 configDotenv();
 if (!process.env.JWT_SECRET) {
-    console.warn("⚠️ Warning: JWT_SECRET is missing in .env. Using a default secret (Not recommended)");
+    console.warn("Warning: JWT_SECRET is missing in .env. Using a default secret (Not recommended)");
 }
 
 router.post('/signup', async (req, res) => {
