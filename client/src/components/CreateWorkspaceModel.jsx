@@ -1,7 +1,12 @@
+// src/components/CreateWorkspaceModal.jsx
+
 import { useState } from "react";
+import { FaTimes, FaSpinner } from "react-icons/fa"; // Import necessary icons
+import PlanConfig from "../config/planConfig";
+
 const API = import.meta.env.VITE_API_URL;
 
-function CreateWorkspaceModal({ setShowModal, setWorkspaces }) {
+function CreateWorkspaceModal({ setShowModal, setWorkspaces,currentPlan, workspaces }) {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -9,6 +14,12 @@ function CreateWorkspaceModal({ setShowModal, setWorkspaces }) {
   const handleCreate = async () => {
     if (!name.trim()) {
       setError("Workspace name is required.");
+      return;
+    }
+    const limit = PlanConfig[currentPlan]?.maxWorkspaces;
+
+    if (workspaces.length >= limit) {
+      setError(`You've reached your limit of ${limit} workspaces. Please upgrade your plan.`);
       return;
     }
 
@@ -28,7 +39,7 @@ function CreateWorkspaceModal({ setShowModal, setWorkspaces }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to create workspace.");
 
-      setWorkspaces((prev) => [...prev, data]); 
+      setWorkspaces((prev) => [...prev, data]);
       setShowModal(false);
     } catch (err) {
       setError(err.message);
@@ -36,37 +47,67 @@ function CreateWorkspaceModal({ setShowModal, setWorkspaces }) {
       setLoading(false);
     }
   };
+  
+  // Handle Enter key submission
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !loading) {
+      handleCreate();
+    }
+  };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-      <div className="bg-[#1e293b] p-6 rounded-lg shadow-lg w-96 text-white">
-        <h2 className="text-2xl font-bold mb-4">Create Workspace</h2>
-
-        {error && <p className="text-red-400 text-sm mb-2">{error}</p>}
-
-        <input
-          type="text"
-          placeholder="Workspace Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 border border-gray-600 rounded mb-4 bg-[#0f172a] text-white placeholder-gray-400"
-        />
-
-        <div className="flex justify-end gap-2">
+    // Main overlay with a semi-transparent background
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
+      <div className="bg-zinc-900 rounded-lg shadow-xl border border-zinc-700 w-full max-w-md">
+        {/* --- Modal Header --- */}
+        <div className="flex justify-between items-center p-4 border-b border-zinc-700">
+          <h2 className="text-lg font-bold">Create New Workspace</h2>
           <button
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+            onClick={() => setShowModal(false)}
+            className="p-1 text-zinc-400 hover:text-white"
+            aria-label="Close"
+          >
+            <FaTimes />
+          </button>
+        </div>
+
+        {/* --- Modal Body --- */}
+        <div className="p-6">
+          {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+
+          <label htmlFor="workspace-name" className="block text-sm font-medium text-zinc-300 mb-3">
+            Workspace Name
+          </label>
+          <input
+            id="workspace-name"
+            type="text"
+            placeholder="e.g., Q4 Marketing Campaign"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyPress={handleKeyPress}
+            className="w-full p-2 bg-zinc-800 border border-zinc-600 rounded-md placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+            autoFocus
+          />
+        </div>
+
+        <div className="flex justify-end p-4 bg-zinc-800/50 rounded-b-lg space-x-3">
+          <button
+            className="px-4 py-2 bg-zinc-600 text-white rounded-md hover:bg-zinc-700 font-semibold"
             onClick={() => setShowModal(false)}
             disabled={loading}
           >
             Cancel
           </button>
-
           <button
-            className="px-4 py-2 bg-white text-black rounded hover:bg-gray-300 flex items-center"
+            className="px-4 py-2 w-32 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:bg-zinc-700 disabled:text-zinc-400 disabled:cursor-not-allowed font-semibold flex items-center justify-center"
             onClick={handleCreate}
-            disabled={loading}
+            disabled={loading || !name.trim()}
           >
-            {loading ? <span className="loader mr-2"></span> : "Create"}
+            {loading ? (
+              <FaSpinner className="animate-spin" />
+            ) : (
+              "Create"
+            )}
           </button>
         </div>
       </div>

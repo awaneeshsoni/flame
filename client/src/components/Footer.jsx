@@ -5,20 +5,20 @@ function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#1e293b] py-6 text-center text-gray-300 mt-auto">
+    <footer className="bg-black py-6 text-center text-white/70 mt-auto border-t border-white/10">
       <div className="container mx-auto px-4">
-        <p>© {currentYear} Flame. All rights reserved.</p>
-        <div className="mt-2 space-x-4">
-          <Link to="/terms" className="hover:text-white">
+        <p className="text-sm">© {currentYear} Flame. All rights reserved.</p>
+        <div className="mt-3 space-x-6 text-sm">
+          <Link to="/" className="hover:text-orange-600 transition">
             Home
           </Link>
-          <Link to="/privacy" className="hover:text-white">
+          <Link to="/blog" className="hover:text-orange-600 transition">
             Blog
           </Link>
-          <Link to="/privacy" className="hover:text-white">
+          <Link to="/about" className="hover:text-orange-600 transition">
             About
           </Link>
-          <Link to="/privacy" className="hover:text-white">
+          <Link to="/contact" className="hover:text-orange-600 transition">
             Contact
           </Link>
         </div>

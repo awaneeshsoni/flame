@@ -1,217 +1,120 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import logo from "../fire.svg"; 
-import { FaCheckCircle } from 'react-icons/fa';
+import logo from "../fire.svg";
+import { FaCheckCircle } from "react-icons/fa";
 import Footer from "../components/Footer";
 
 const Home = () => {
   return (
-    <div className="bg-gray-900 text-white">
-     
-      <div className="py-4 px-4 text-center md:text-left md:flex md:items-center md:justify-between max-w-7xl mx-auto">
-        <Link to="/" className="flex items-center text-white text-2xl font-bold">
-          <img src={logo} alt="Flame Logo" className="h-8 w-8 mr-2" /> 
-            Flame
-        </Link>
-      </div>
-
-      
-        <section className="py-16 px-4 text-center bg-gray-900 text-white">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
-            Ignite Your Video Editing Workflow
+    <div className="bg-black text-white font-sans">
+      <section className="py-20 px-6 text-center bg-black">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+            <span className="text-orange-600">Ignite</span> Your Video Editing Workflow
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8">
-          Get precise, time-stamped feedback on your video projects, faster than ever.
+          <p className="text-sm md:text-base text-white/70 mb-10">
+            Get precise, time-stamped feedback on your video projects, faster than ever.
           </p>
           <Link
             to="/signup"
-            className="bg-white hover:bg-gray-300 text-black font-bold py-3 px-8 rounded-full transition duration-300 inline-block"
+            className="bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium py-3 px-8 rounded-md transition duration-300"
           >
             Try Flame For Free
           </Link>
 
-          
-          <div className="mt-8">
+          <div className="mt-16">
             <img
-              src="../fire.svg" 
-              alt="Flame Hero Mobile"
-              className="w-full rounded-lg shadow-lg md:hidden" 
-            />
-            <img
-              src="../fire.svg" 
-              alt="Flame Hero Desktop"
-              className="w-full rounded-lg shadow-lg hidden md:block" 
+              src={logo}
+              alt="Flame Hero"
+              className="w-full max-w-md mx-auto rounded-md shadow-2xl"
             />
           </div>
         </div>
       </section>
 
-      
-        <section className="py-16 px-4 bg-gray-800">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">
-              Tired of Endless Feedback Revisions?
-            </h2>
-            <p className="text-lg text-gray-300">
-              Email chains. Vague comments.  Misunderstood feedback.  We know the struggle.
-            </p>
-          </div>
-        </section>
-
-      
-        <section className="bg-gray-700 py-16 px-4">
-            <div className="max-w-3xl mx-auto text-center">
-                <h2 className="text-3xl font-bold text-white mb-4">Flame Makes Feedback <span className="text-white">Simple</span>.</h2>
-                <p className="text-lg text-gray-300">
-                  Flame is the video review tool designed to streamline your workflow and eliminate confusion. Get clear, actionable feedback, directly on your video timeline.
-                </p>
-            </div>
-        </section>
-      
-      <section className="py-16 px-4 bg-gray-800">
+      {/* Problem Section */}
+      <section className="py-16 px-6 bg-black border-t border-white/10">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-12">
-            Why Editors Love Flame
+          <h2 className="text-3xl font-semibold mb-4">Tired of Endless Feedback Revisions?</h2>
+          <p className="text-sm text-white/70">
+            Email chains. Vague comments. Misunderstood feedback. We know the struggle.
+          </p>
+        </div>
+      </section>
+
+      {/* Solution Section */}
+      <section className="py-16 px-6 bg-black">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl font-semibold mb-4">
+            Flame Makes Feedback <span className="text-orange-600">Simple</span>.
           </h2>
-          <div className="grid grid-cols-1 gap-8">
-            
-            <div>
-            <FaCheckCircle className="text-white text-3xl mb-2 inline-block" />
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Time-Stamped Feedback
-              </h3>
-              <p className="text-gray-300">
-                Clients can leave comments directly on the video timeline,
-                eliminating guesswork.
-              </p>
-            </div>
-            <div>
-            <FaCheckCircle className="text-white text-3xl mb-2 inline-block" />
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Streamlined Communication
-              </h3>
-              <p className="text-gray-300">
-                Keep all feedback in one central location. No more scattered
-                emails or messages.
-              </p>
-            </div>
-            <div>
-            <FaCheckCircle className="text-white text-3xl mb-2 inline-block" />
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Faster Revisions
-              </h3>
-              <p className="text-gray-300">
-                Clear feedback means faster turnaround times and happier
-                clients.
-              </p>
-            </div>
-            <div>
-            <FaCheckCircle className="text-white text-3xl mb-2 inline-block" />
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Easy to Use
-              </h3>
-              <p className="text-gray-300">
-                Simple and intuitive interface for both editors and clients. No
-                learning curve.
-              </p>
-            </div>
-            <div>
-            <FaCheckCircle className="text-white text-3xl mb-2 inline-block" />
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Version Control
-              </h3>
-              <p className="text-gray-300">
-                Keep track of different video versions and feedback history.
-              </p>
-            </div>
-            <div>
-            <FaCheckCircle className="text-white text-3xl mb-2 inline-block" />
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Secure and Private
-              </h3>
-              <p className="text-gray-300">
-                Your videos and feedback are kept safe and confidential.
-              </p>
-            </div>
+          <p className="text-sm text-white/70">
+            Streamline your workflow and eliminate confusion. Get clear, actionable feedback directly on your video timeline.
+          </p>
+        </div>
+      </section>
+
+      {/* Why Editors Love Flame */}
+      <section className="py-20 px-6 bg-black border-t border-white/10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-semibold mb-12">Why Editors Love <span className="text-orange-600">Flame</span></h2>
+          <div className="grid md:grid-cols-2 gap-10 text-left">
+            {[
+              ["Time-Stamped Feedback", "Clients can leave comments directly on the video timeline."],
+              ["Streamlined Communication", "All feedback in one place. No scattered messages."],
+              ["Faster Revisions", "Clear feedback means faster turnaround times."],
+              ["Easy to Use", "No learning curve. Just clarity and control."],
+              ["Version Control", "Track all versions and feedback history with ease."],
+              ["Secure and Private", "Your videos and feedback stay confidential."],
+            ].map(([title, desc], i) => (
+              <div key={i}>
+                <FaCheckCircle className="text-orange-600 text-lg mb-2" />
+                <h3 className="text-base font-semibold mb-1">{title}</h3>
+                <p className="text-sm text-white/70">{desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      
-        <section className="bg-gray-700 py-16 px-4">
+      {/* Features Section */}
+      <section className="py-20 px-6 bg-black">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-semibold mb-12">Flame Features</h2>
+          <div className="space-y-16">
+            {[
+              ["Precision Feedback with Time-Stamping", "Clients click on video timeline to leave specific, easy-to-understand comments."],
+              ["Organized Version History", "Upload new video versions and organize feedback by each."],
+              ["Simple for Clients", "No complicated tools. Everything works in the browser."],
+            ].map(([title, desc], i) => (
+              <div key={i} className="flex flex-col items-center">
+                <img src={logo} alt="Feature" className="w-full max-w-sm rounded-md shadow-md mb-4" />
+                <h3 className="text-lg font-medium mb-2">{title}</h3>
+                <p className="text-sm text-white/70">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-20 px-6 bg-black border-t border-white/10 text-center">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold  text-center mb-12 text-white">
-            Flame Features
+          <h2 className="text-3xl font-semibold mb-4">
+            Ready to <span className="text-orange-600">Supercharge</span> Your Video Reviews?
           </h2>
-          <div className="space-y-8">
-           
-            <div className="flex flex-col items-center">
-              <img
-                src="../fire.svg" 
-                alt="Link Management"
-                className="w-full rounded-lg shadow-md mb-4"
-              />
-              <h3 className="text-2xl font-semibold text-white mb-2">
-                Precision Feedback with Time-Stamping
-              </h3>
-              <p className="text-gray-300 text-center">
-               Clients can click anywhere on the video timeline to leave a
-                comment, ensuring feedback is specific and easy to understand.
-              </p>
-            </div>
-
-            
-            <div className="flex flex-col items-center">
-              <img
-                src="../fire.svg" 
-                alt="Page Customization"
-                className="w-full rounded-lg shadow-md mb-4"
-              />
-              <h3 className="text-2xl font-semibold text-white mb-2">
-                Organized Version History
-              </h3>
-              <p className="text-gray-300 text-center">
-                Upload new versions of your video and keep all feedback organized
-                by version.
-              </p>
-            </div>
-            
-             <div className="flex flex-col items-center">
-              <img
-                src="../fire.svg" 
-                alt="Link Management"
-                className="w-full rounded-lg shadow-md mb-4"
-              />
-              <h3 className="text-2xl font-semibold text-white mb-2">
-                 Simple for Clients
-              </h3>
-              <p className="text-gray-300 text-center">
-                No complicated software to learn. Clients can review videos and
-                leave feedback directly in their web browser.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      
-      <section className="bg-gray-900 py-16 px-4 text-white">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold  mb-4">
-            Ready to Supercharge Your Video Reviews?
-          </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-sm text-white/70 mb-8">
             Start your free trial of Flame today.
           </p>
           <Link
             to="/signup"
-            className="bg-white hover:bg-gray-300 text-black font-bold py-3 px-8 rounded-full transition duration-300 inline-block"
+            className="bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium py-3 px-8 rounded-md transition duration-300"
           >
             Get Started Now
           </Link>
         </div>
       </section>
+
       <Footer />
     </div>
   );

@@ -1,11 +1,11 @@
+// src/pages/Signup.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const API = import.meta.env.VITE_API_URL;
 
-function Signup() {
+function Signup({ setIsAuthenticated }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,7 +28,23 @@ function Signup() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Signup failed");
 
-      navigate("/login");
+      // Save token & name in localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("name", data.name); // depends on your backend return
+
+      setIsAuthenticated(true);
+
+      // After signup, check for workspaces
+      const workspaceRes = await fetch(`${API}/api/workspace`, {
+        headers: { Authorization: `Bearer ${data.token}` },
+      });
+      const workspaces = await workspaceRes.json();
+
+      if (Array.isArray(workspaces) && workspaces.length > 0) {
+        navigate(`/workspace/${workspaces[0]._id}`);
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -37,60 +53,69 @@ function Signup() {
   };
 
   return (
-    <div className="bg-[#0f172a]">
-      <Navbar />
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f172a] text-white p-4"> 
-      <h2 className="text-2xl font-bold mb-4">Create an Account</h2>
-      {error && <p className="text-red-500">{error}</p>}
+    <div className="bg-black text-white min-h-screen flex flex-col">
+      {/* <NavbarHome /> */}
 
-      <form onSubmit={handleSignup} className="w-full max-w-md bg-[#1e293b] p-6 rounded-lg shadow-md"> 
-        <input
-          type="text"
-          placeholder="Name"
-          className="w-full p-2 border border-gray-600 bg-[#fef9c3] text-black rounded mb-4"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 border border-gray-600 bg-[#fef9c3] text-black rounded mb-4" 
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-2 border border-gray-600 bg-[#fef9c3] text-black rounded mb-4"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-white text-black py-2 rounded font-semibold disabled:opacity-50" 
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <div className="flex items-center justify-center">
-                <div className="animate-spin border-4 border-gray-400 border-t-black rounded-full w-6 h-6"></div>
-            </div>
-          ) : (
-            "Sign Up"
+      <main className="flex flex-1 flex-col items-center justify-center p-6">
+        <div className="w-full max-w-md bg-black border border-white/10 p-8 rounded-md shadow-lg">
+          <h2 className="text-2xl font-semibold text-center mb-6">
+            Create an <span className="text-orange-600">Account</span>
+          </h2>
+
+          {error && (
+            <p className="text-sm text-red-500 mb-4 text-center">{error}</p>
           )}
-        </button>
-      </form>
 
-      <p className="mt-4">
-        Already have an account?{" "}
-        <Link to="/login" className="text-gray-400 hover:text-white">
-          Login
-        </Link>
-      </p>
-    </div>
-    <Footer />
+          <form onSubmit={handleSignup} className="space-y-4 text-sm">
+            <input
+              type="text"
+              placeholder="Name"
+              className="w-full p-3 border border-white/20 bg-white text-black rounded-md focus:outline-none"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full p-3 border border-white/20 bg-white text-black rounded-md focus:outline-none"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="w-full p-3 border border-white/20 bg-white text-black rounded-md focus:outline-none"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 rounded-md transition disabled:opacity-50"
+            >
+              {isLoading ? (
+                <div className="flex justify-center">
+                  <div className="animate-spin border-4 border-white/30 border-t-orange-600 rounded-full w-6 h-6"></div>
+                </div>
+              ) : (
+                "Sign Up"
+              )}
+            </button>
+          </form>
+
+          <p className="text-center mt-4 text-white/70">
+            Already have an account?{" "}
+            <Link to="/login" className="text-orange-600 hover:underline">
+              Login
+            </Link>
+          </p>
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }

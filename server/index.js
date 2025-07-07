@@ -5,6 +5,7 @@ import { configDotenv } from 'dotenv';
 import auth from "./routes/auth.js"
 import video from "./routes/video.js"
 import workspace from './routes/workspace.js';
+import user from "./routes/user.js"
 
 configDotenv();
 const PORT = process.env.PORT || 5000;
@@ -37,6 +38,7 @@ app.get('/', (req, res) => res.send('API Running'));
 app.use('/api/auth', auth);
 app.use('/api/workspace', workspace );
 app.use('/api/video', video);
+app.use('/api/user', user);
 
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

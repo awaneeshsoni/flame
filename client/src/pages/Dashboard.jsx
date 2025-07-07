@@ -1,23 +1,33 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateWorkspaceModal from "../components/CreateWorkspaceModel";
-import Navbar from "../components/Navbar";
+import EditWorkspaceModal from "../components/EditWorkspaceModel";
 import Footer from "../components/Footer";
+import { FaPen } from "react-icons/fa";
+import JoinWithCode from "../components/JoinWithCode";
+
 const API = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
   const [workspaces, setWorkspaces] = useState([]);
-  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [editingWorkspace, setEditingWorkspace] = useState(null);
+  const navigate = useNavigate();
+  const plan = localStorage.getItem("plan");
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
         const res = await fetch(`${API}/api/workspace`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
         const data = await res.json();
-        if (res.ok) setWorkspaces(data);
+        if (res.ok) {
+          setWorkspaces(data);
+        }
       } catch (err) {
         console.error("Error fetching workspaces:", err);
       }
@@ -26,41 +36,84 @@ function Dashboard() {
     fetchWorkspaces();
   }, []);
 
-  const placeholderWorkspaces = [
-    { _id: "1", name: "Example Workspace 1", icon: "📂" },
-    { _id: "2", name: "Example Workspace 2", icon: "🚀" },
-  ];
-
   return (
-    <div className="bg-blue-700">
-      <Navbar />
-    <div className="p-8 min-h-screen bg-gray-900 text-white">
-      <div className="flex justify-between items-center mb-6">
-        <button
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          onClick={() => setShowModal(true)}
-        >
-          + Create Workspace
-        </button>
-      </div>
+    <div className="flex flex-col min-h-screen bg-black text-white">
+      <main className="w-full max-w-6xl mx-auto px-4 py-8">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+          <h1 className="text-xl font-semibold">Your Workspaces</h1>
 
-      <h2 className="text-lg font-semibold mb-3 px- py-3">Your Workspaces</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {[...workspaces].map((ws) => (
-          <div
-            key={ws._id}
-            className="bg-gray-800 rounded-lg shadow-md p-4 flex flex-col items-center justify-center cursor-pointer transition transform hover:scale-105 hover:bg-gray-700 aspect-square w-60"
-            onClick={() => navigate(`/workspace/${ws._id}`)}
-          >
-            <div className="text-5xl mb-1">{ws.icon || "📁"}</div>
-            <h3 className="text-1xl font-medium text-white text-center">{ws.name}</h3>
+          <div className="flex flex-wrap gap-3 items-center">
+              <JoinWithCode />
+
+            <button
+              onClick={() => setShowModal(true)}
+              title="Create Workspace"
+              className="h-9 bg-orange-600 hover:bg-orange-700 text-white px-4 rounded-md text-sm font-medium shadow transition-all flex items-center gap-2"
+            >
+              <span className="text-lg">+</span>
+              <p className="hidden sm:inline">Create Workspace</p>
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
 
-      {showModal && <CreateWorkspaceModal setShowModal={setShowModal} setWorkspaces={setWorkspaces} />}
-    </div>
-    <Footer />
+        {workspaces.length === 0 ? (
+          <p className="text-sm text-white/70">
+            No workspaces yet. Create one to get started.
+          </p>
+        ) : (
+          <ul className="space-y-4">
+            {workspaces.map((ws) => (
+              <li
+                key={ws._id}
+                className="flex items-center justify-between bg-zinc-800 p-4 rounded hover:bg-zinc-700 border-b border-white/10 pb-2 text-sm sm:text-base"
+              >
+                <div
+
+                  onClick={() => navigate(`/workspace/${ws._id}`)}
+                  className="flex cursor-pointer items-center gap-2 hover:text-orange-600 transition"
+                >
+                  <span className="text-lg">{ws.icon || "📁"}</span>
+                  <div className="flex flex-col">
+                    <span>{ws.name}</span>
+                    <span className="text-xs text-white/40">
+                      Created by: {ws.creator?.name || "Unknown"}
+                    </span>
+                  </div>
+                </div>
+
+                {ws.creator?._id === userId && (
+                  <button
+                    onClick={() => setEditingWorkspace(ws)}
+                    className="cursor-pointer text-white/40 hover:text-orange-500 text-sm"
+                    title="Edit"
+                  >
+                    <FaPen />
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
+
+      {showModal && (
+        <CreateWorkspaceModal
+          setShowModal={setShowModal}
+          setWorkspaces={setWorkspaces}
+          currentPlan={plan}
+          workspaces={workspaces}
+        />
+      )}
+
+      {editingWorkspace && (
+        <EditWorkspaceModal
+          workspace={editingWorkspace}
+          setWorkspaces={setWorkspaces}
+          setShowModal={() => setEditingWorkspace(null)}
+        />
+      )}
+
+      <Footer />
     </div>
   );
 }
