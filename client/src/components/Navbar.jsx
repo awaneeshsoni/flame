@@ -44,7 +44,7 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated }) {
       <div className="max-w-screen flex justify-between items-center">
         <Link to="/" className="flex items-center text-white text-xl font-bold space-x-2">
           <span className="text-orange-600 text-2xl">🔥</span>
-          <span>Flame</span>
+          <span>Flameio</span>
         </Link>
 
         <div className="flex items-center space-x-6 text-sm text-white/80 relative">

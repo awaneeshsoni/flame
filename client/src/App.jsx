@@ -11,6 +11,9 @@ import Navbar from './components/Navbar';
 import Pricing from './pages/Pricing';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Blog from './pages/Blog';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -129,6 +132,9 @@ export default function App() {
         <Route path='/video/:id' element={<VideoPageClient />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/blog" element={<Blog />} />
       </Routes>
     </Router>
   );
