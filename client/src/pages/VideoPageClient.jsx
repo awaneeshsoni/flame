@@ -53,7 +53,7 @@ function VideoPageClient() {
                 body: JSON.stringify(newComment),
             });
             if (res.ok) {
-                const savedComment = await res.json(); // Use the comment returned from API
+                const savedComment = await res.json();
                 setComments(prev => [...prev, newComment]);
                 setCommentText("");
             } else {
@@ -66,14 +66,12 @@ function VideoPageClient() {
         }
     };
 
-    // Handler for pausing video when focusing the comment textarea
     const handlePauseVideo = () => {
         if (videoRef.current) {
             videoRef.current.pause();
         }
     };
 
-    // Handler for jumping to a timestamp when a comment is clicked
     const handleCommentClick = (timestamp) => {
         if (videoRef.current && timestamp !== undefined) {
             videoRef.current.currentTime = parseFloat(timestamp);

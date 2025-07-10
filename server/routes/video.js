@@ -210,8 +210,9 @@ router.delete("/:videoId", authMiddleware, async (req, res) => {
     video.deleted = true;
     await video.save();
     await Workspace.findByIdAndUpdate(video.workspace._id, {
-  $pull: { videos: video._id }
-});
+      $pull: { videos: video._id },
+      $inc: { storageUsed: -video.filesize }
+    });
     res.status(200).json({ message: "Video deleted successfully." });
     setImmediate(async () => {
       try {

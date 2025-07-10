@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import CreateWorkspaceModal from "../components/CreateWorkspaceModel";
 import Footer from "../components/Footer";
 import UploadVideoModal from "../components/UploadVideoModel";
-import UploadTracker from "../components/UploadTracker";
+// import UploadTracker from "../components/UploadTracker";
 import WorkspaceSidebar from "../components/WorkspaceSidebar";
 import MembersPanel from "../components/MembersPanel";
 import EditWorkspaceModal from "../components/EditWorkspaceModel";
@@ -68,15 +68,18 @@ function Workspace() {
         setShowEditModal(true);
     }
 
-    const handleUploadComplete = (newlyUploadedVideo) => {
-        setVideos((prev) => [...prev, newlyUploadedVideo]);
-        setWorkspaces((prev) =>
-            prev.map((ws) =>
-                ws._id === activeWorkspace._id
-                    ? { ...ws, storageUsed: ws.storageUsed + videoFile.size }
-                    : ws
-            )
-        );
+    const handleUploadComplete = (video, workspace) => {
+        setVideos((prev) => [...prev, video]);
+
+        // if (workspace && video?.fileSize) {
+        //     setWorkspaces((prev) =>
+        //         prev.map((ws) =>
+        //             ws._id === workspace._id
+        //                 ? { ...ws, storageUsed: ws.storageUsed + video.fileSize }
+        //                 : ws
+        //         )
+        //     );
+        // }
     };
 
     const handleRemoveUpload = (uploadId) => {
@@ -86,7 +89,9 @@ function Workspace() {
     const handleDeleteVideo = async (videoId, setVideos) => {
         const confirmed = window.confirm("Are you sure you want to delete this video?");
         if (!confirmed) return;
-
+        const video = videos.find(v => v._id === videoId);
+        console.log(video)
+        const fileSize = video?.fileSize || 0;
         try {
             const res = await fetch(`${API}/api/video/${videoId}`, {
                 method: "DELETE",
@@ -101,6 +106,13 @@ function Workspace() {
             }
 
             setVideos(prev => prev.filter(v => v._id !== videoId));
+            // setWorkspaces((prev) =>
+            //     prev.map((ws) =>
+            //         ws._id === activeWorkspace._id
+            //             ? { ...ws, storageUsed: ws.storageUsed - fileSize }
+            //             : ws
+            //     )
+            // );
         } catch (err) {
             alert(err.message || "Error deleting video");
         }
@@ -191,11 +203,12 @@ function Workspace() {
                         wsid={wsid}
                         onClose={() => setShowUploadModal(false)}
                         setVideos={setVideos}
+                        handleUploadComplete={handleUploadComplete}
                     />
                 )
             }
 
-            <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
+            {/* <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
                 {activeUploads.map((upload) => (
                     <UploadTracker
                         key={upload.id}
@@ -204,7 +217,7 @@ function Workspace() {
                         onRemove={handleRemoveUpload}
                     />
                 ))}
-            </div>
+            </div> */}
 
             <Footer />
         </div >

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaPen } from "react-icons/fa";
 import PlanConfig from '../config/planConfig';
 import JoinWithCode from './JoinWithCode';
 
@@ -11,7 +10,9 @@ function formatBytes(bytes) {
   return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${sizes[i]}`;
 }
 
-function WorkspaceSidebar({ workspaces, currentWorkspaceId, onCreateClick, onEditClick }) {
+const userId = localStorage.getItem("userId");
+
+function WorkspaceSidebar({ workspaces, currentWorkspaceId, onCreateClick }) {
   const navigate = useNavigate();
 
   return (
@@ -36,21 +37,12 @@ function WorkspaceSidebar({ workspaces, currentWorkspaceId, onCreateClick, onEdi
           return (
             <div key={ws._id} className="space-y-1">
               <div
-                className={`w-full flex justify-between items-center px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition-all duration-150 ${isActive
-                  ? "bg-white text-black"
-                  : "bg-zinc-800 hover:bg-zinc-700 text-white"
-                  }`}
+                className={`w-full flex justify-between items-center px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition-all duration-150 ${
+                  isActive ? "bg-white text-black" : "bg-zinc-800 hover:bg-zinc-700 text-white"
+                }`}
                 onClick={() => navigate(`/workspace/${ws._id}`)}
               >
                 <span className="truncate">{ws.name}</span>
-                <FaPen
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditClick(ws); // trigger modal
-                  }}
-                  className="ml-2 text-xs opacity-50 hover:opacity-90 cursor-pointer"
-                  title="Edit Workspace"
-                />
               </div>
 
               {isActive && (

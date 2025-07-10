@@ -131,7 +131,7 @@ function VideoPageEditor() {
             });
 
             if (res.ok) {
-                const savedComments = await res.json(); // array of all comments
+                const savedComments = await res.json();
                 const latestComment = savedComments[savedComments.length - 1];
                 setComments(prev => [...prev, latestComment]);
                 setCommentText("");
@@ -187,7 +187,6 @@ function VideoPageEditor() {
 
     return (
         <div className="flex flex-col min-h-screen bg-black text-white">
-            {/* <NavbarApp workspaces={workspaces} setShowModal={setCreateWorkspace} /> */}
 
             <div className="flex flex-1 overflow-y-auto">
                 <WorkspaceSidebar
@@ -239,7 +238,6 @@ function VideoPageEditor() {
                         )}
                     </div>
 
-                    {/* --- REFACTORED COMMENTS SECTION --- */}
                     <CommentsSection
                         comments={comments}
                         isLoading={comments === null}

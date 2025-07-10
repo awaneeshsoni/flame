@@ -90,8 +90,8 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated }) {
           ) : (
             <>
               <Link to="/pricing" className="hover:text-orange-600 transition">Pricing</Link>
-              <Link to="/about" className="hover:text-orange-600 transition">About</Link>
-              <Link to="/contact" className="hover:text-orange-600 transition">Contact</Link>
+              <Link to="/about" className="hidden sm:block hover:text-orange-600 transition">About</Link>
+              <Link to="/contact" className="hidden sm:block hover:text-orange-600 transition">Contact</Link>
               <Link to="/login" className="hover:text-orange-600 transition">Login</Link>
             </>
           )}

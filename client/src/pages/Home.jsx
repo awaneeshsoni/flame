@@ -32,7 +32,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Problem Section */}
+      
       <section className="py-16 px-6 bg-black border-t border-white/10">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-4">Tired of Endless Feedback Revisions?</h2>
@@ -42,7 +42,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Solution Section */}
+      
       <section className="py-16 px-6 bg-black">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-4">
@@ -54,7 +54,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Why Editors Love Flame */}
+      
       <section className="py-20 px-6 bg-black border-t border-white/10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-12">Why Editors Love <span className="text-orange-600">Flame</span></h2>
@@ -64,7 +64,6 @@ const Home = () => {
               ["Streamlined Communication", "All feedback in one place. No scattered messages."],
               ["Faster Revisions", "Clear feedback means faster turnaround times."],
               ["Easy to Use", "No learning curve. Just clarity and control."],
-              ["Version Control", "Track all versions and feedback history with ease."],
               ["Secure and Private", "Your videos and feedback stay confidential."],
             ].map(([title, desc], i) => (
               <div key={i}>
@@ -77,7 +76,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      
       <section className="py-20 px-6 bg-black">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-12">Flame Features</h2>
@@ -97,7 +96,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Final CTA */}
+      
       <section className="py-20 px-6 bg-black border-t border-white/10 text-center">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-semibold mb-4">
