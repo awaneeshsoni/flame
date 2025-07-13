@@ -33,6 +33,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.options(/(.*)/, cors(corsOptions));
+app.use(
+    "/api/webhooks/lemonsqueezy",
+    express.raw({ type: "application/json" }) 
+);
 app.use(express.json());
 
 app.get('/', (req, res) => res.send('API Running'));
