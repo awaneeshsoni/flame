@@ -5,7 +5,6 @@ function formatDateTime(dateStr) {
     return date.toLocaleString();
 }
 
-
 function ClientCommentsSection({
     comments,
     isLoading,

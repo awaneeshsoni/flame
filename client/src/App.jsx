@@ -1,141 +1,152 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from './context/authContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import GuestRoute from './components/GuestRoute';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Workspace from './pages/Workspace';
-import Home from './pages/Home';
 import VideoPageEditor from './pages/VideoPageEditor';
 import VideoPageClient from './pages/VideoPageClient';
-import Navbar from './components/Navbar';
 import Pricing from './pages/Pricing';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Blog from './pages/Blog';
+import { WorkspaceProvider, useWorkspaceContext } from './context/WorkspaceContext'; // ✅ added useWorkspaceContext
 
-const API = import.meta.env.VITE_API_URL;
+import UploadVideoModal from './components/UploadVideoModel';
+import { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
-function ProtectedRoute({ children }) {
-  const [isAuth, setIsAuth] = useState(null);
-  const location = useLocation();
+const queryClient = new QueryClient();
 
-  useEffect(() => {
-    const verify = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return setIsAuth(false);
-      try {
-        const res = await fetch(`${API}/api/auth/verify-token`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("name");
-        }
-        setIsAuth(res.ok);
-      } catch {
-        localStorage.removeItem("token");
-        localStorage.removeItem("name");
-        setIsAuth(false);
-      }
-    };
-    verify();
-  }, [location.pathname]);
+function AppContent() {
+  const [activeUploads, setActiveUploads] = useState([]);
 
-  if (isAuth === null) return null; // loading
-  return isAuth ? children : <Navigate to="/" />;
-}
-
-function PublicRoute({ children }) {
-  const token = localStorage.getItem("token");
-  return token ? <Navigate to="/dashboard" /> : children;
-}
-
-export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { setWorkspaces } = useWorkspaceContext(); // ✅ use setWorkspaces here
 
   useEffect(() => {
-    const verify = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      try {
-        const res = await fetch(`${API}/api/auth/verify-token`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setIsAuthenticated(true);
-          if (data.name) localStorage.setItem("name", data.name);
-          if (data.plan) localStorage.setItem("plan", data.plan); // fixed typo: was `data.name`
-        } else {
-          localStorage.removeItem("token");
-          localStorage.removeItem("plan");
-          localStorage.removeItem("name");
-          setIsAuthenticated(false);
-        }
-      } catch {
-        localStorage.removeItem("token");
-        localStorage.removeItem("plan");
-        localStorage.removeItem("name");
-        setIsAuthenticated(false);
-      }
+    const handler = (e) => {
+      const { wsid, workspace } = e.detail;
+      const uploadId = uuidv4();
+      setActiveUploads((prev) => [
+        ...prev,
+        { id: uploadId, wsid, workspace },
+      ]);
     };
-    verify();
+
+    window.addEventListener('open-upload-modal', handler);
+    return () => window.removeEventListener('open-upload-modal', handler);
   }, []);
 
-  return (
-    <Router>
-      <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
-      <Routes>
-        <Route path='/' element={
-          <PublicRoute>
-            <Home />
-          </PublicRoute>
-        } />
-        <Route path='/login' element={
-          <PublicRoute>
-            <Login setIsAuthenticated={setIsAuthenticated} />
-          </PublicRoute>
-        } />
-        <Route path='/signup' element={
-          <PublicRoute>
-            <Signup setIsAuthenticated={setIsAuthenticated} />
-          </PublicRoute>
-        } />
+  const handleCloseUpload = (id) => {
+    setActiveUploads((prev) => prev.filter((upload) => upload.id !== id));
+  };
+const handleUploadComplete = (video, workspace) => {
+  window.dispatchEvent(
+    new CustomEvent("video-uploaded", {
+      detail: { workspaceId: workspace._id, video },
+    })
+  );
+};
 
-        <Route path='/profile/:userId' element={
-          <ProtectedRoute>
-            <Profile  />
-          </ProtectedRoute>
-        } />
-        <Route path='/dashboard' element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-        <Route path='/workspace/:wsid' element={
-          <ProtectedRoute>
-            <Workspace />
-          </ProtectedRoute>
-        } />
-        <Route path='/workspace/:wsid/video/:vid' element={
-          <ProtectedRoute>
-            <VideoPageEditor />
-          </ProtectedRoute>
-        } />
-        <Route path='/video/:id' element={<VideoPageClient />} />
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <GuestRoute>
+              <Home />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <GuestRoute>
+              <Signup />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/profile/:userId"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/workspace/:wsid"
+          element={
+            <ProtectedRoute>
+              <Workspace />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/workspace/:wsid/video/:vid"
+          element={
+            <ProtectedRoute>
+              <VideoPageEditor />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/video/:id" element={<VideoPageClient />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<Blog />} />
       </Routes>
-    </Router>
+
+      {activeUploads.map(({ id, wsid, workspace }, index) => (
+        <UploadVideoModal
+          key={id}
+          wsid={wsid}
+          workspace={workspace}
+          index={index}
+          onClose={() => handleCloseUpload(id)}
+          handleUploadComplete={handleUploadComplete}
+        />
+      ))}
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <WorkspaceProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </WorkspaceProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

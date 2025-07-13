@@ -5,12 +5,12 @@ import Footer from "../components/Footer";
 const planDetails = {
     pro: {
         name: "Pro",
-        price: "$29/month",
+        price: "$21/month",
         description: "Ideal for small teams",
     },
     business: {
         name: "Business",
-        price: "$99/month",
+        price: "$51/month",
         description: "Perfect for growing organizations",
     },
 };

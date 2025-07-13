@@ -7,11 +7,12 @@ import ClientCommentsSection from "../components/CommentsSectionClient";
 const API = import.meta.env.VITE_API_URL;
 
 function VideoPageClient() {
+    const user = JSON.parse(localStorage.getItem("user"));
     const { id } = useParams();
     const [video, setVideo] = useState(null);
     const [comments, setComments] = useState([]);
     const [commentText, setCommentText] = useState("");
-    const [name, setName] = useState(localStorage.getItem("name") || "");
+    const [name, setName] = useState( user.name || "");
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const videoRef = useRef(null);

@@ -23,12 +23,11 @@ router.put("/:id", authMiddleware, async (req, res) => {
     const updates = {};
     if (req.body.name) updates.name = req.body.name;
     if (req.body.email) updates.email = req.body.email;
-    if (req.body.password) updates.password = await bcrypt.hash(req.body.password, 10); // hash
-
-    const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true });
-    res.status(400).json({message: "Updated Successfully"});
+    if (req.body.password) updates.password = await bcrypt.hash(req.body.password, 10); 
+    const user = await User.findByIdAndUpdate(req.params.id, updates, {new: true});
+    res.status(200).json({message: "Updated Successfully", user});
   } catch (err) {
-    res.status(500).json({ message: "Failed to update profile" });
+    res.status(500).json({ message: "Failed to update profile"  });
   }
 });
 

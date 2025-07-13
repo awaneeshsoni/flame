@@ -1,7 +1,7 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import PlanConfig from '../config/planConfig';
 import JoinWithCode from './JoinWithCode';
+import { useWorkspaceContext } from '../context/WorkspaceContext';
 
 function formatBytes(bytes) {
   const sizes = ['B', 'KB', 'MB', 'GB'];
@@ -10,11 +10,10 @@ function formatBytes(bytes) {
   return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${sizes[i]}`;
 }
 
-const userId = localStorage.getItem("userId");
 
-function WorkspaceSidebar({ workspaces, currentWorkspaceId, onCreateClick }) {
+function WorkspaceSidebar({ currentWorkspaceId, onCreateClick }) {
+  const { workspaces } = useWorkspaceContext();
   const navigate = useNavigate();
-
   return (
     <aside className="hidden lg:block w-72 bg-zinc-900 p-6 border-r border-white/10 flex-shrink-0">
       <div className='flex justify-between items-center mb-4'>

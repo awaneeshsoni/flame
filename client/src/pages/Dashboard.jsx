@@ -1,40 +1,24 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateWorkspaceModal from "../components/CreateWorkspaceModel";
 import EditWorkspaceModal from "../components/EditWorkspaceModel";
 import Footer from "../components/Footer";
 import { FaPen } from "react-icons/fa";
 import JoinWithCode from "../components/JoinWithCode";
+import { useWorkspaceContext } from "../context/WorkspaceContext";
+import { useAuth } from "../context/authContext";
 
 const API = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
-  const [workspaces, setWorkspaces] = useState([]);
+  const {workspaces, setWorkspaces} = useWorkspaceContext();
   const [showModal, setShowModal] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState(null);
   const navigate = useNavigate();
-  const plan = localStorage.getItem("plan");
-  const userId = localStorage.getItem("userId");
+  const {user} = useAuth();
+  const plan = user.plan;
+  const userId = user._id;
 
-  useEffect(() => {
-    const fetchWorkspaces = async () => {
-      try {
-        const res = await fetch(`${API}/api/workspace`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setWorkspaces(data);
-        }
-      } catch (err) {
-        console.error("Error fetching workspaces:", err);
-      }
-    };
-
-    fetchWorkspaces();
-  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
@@ -44,7 +28,6 @@ function Dashboard() {
 
           <div className="flex flex-wrap gap-3 items-center">
               <JoinWithCode />
-
             <button
               onClick={() => setShowModal(true)}
               title="Create Workspace"
@@ -99,9 +82,7 @@ function Dashboard() {
       {showModal && (
         <CreateWorkspaceModal
           setShowModal={setShowModal}
-          setWorkspaces={setWorkspaces}
           currentPlan={plan}
-          workspaces={workspaces}
         />
       )}
 

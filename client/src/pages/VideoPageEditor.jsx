@@ -5,6 +5,8 @@ import Footer from "../components/Footer";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import WorkspaceSidebar from "../components/WorkspaceSidebar";
 import CommentsSection from "../components/CommentsSection";
+import { useWorkspaceContext } from "../context/WorkspaceContext";
+import { useAuth } from "../context/authContext";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -13,39 +15,24 @@ function VideoPageEditor() {
     const [video, setVideo] = useState(null);
     const [comments, setComments] = useState(null);
     const [commentText, setCommentText] = useState("");
-    const [name, setName] = useState(localStorage.getItem("username") || "");
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const videoRef = useRef(null);
     const [isPublic, setIsPublic] = useState(null);
     const [shareUrl, setShareUrl] = useState("");
-    const [workspaces, setWorkspaces] = useState([]);
+    const {workspaces, setWorkspaces} = useWorkspaceContext();
     const [selectedWorkspaceName, setSelectedWorkspaceName] = useState("");
     const navigate = useNavigate();
     const [createWorkspace, setCreateWorkspace] = useState(false);
-
-    useEffect(() => {
-        const fetchWorkspaces = async () => {
-            try {
-                const res = await fetch(`${API}/api/workspace`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                });
-                if (!res.ok) throw new Error("Failed to fetch workspaces");
-                const data = await res.json();
-                setWorkspaces(data);
-            } catch (err) {
-                console.error("Error fetching workspaces:", err);
-            }
-        };
-        fetchWorkspaces();
-    }, []);
+    const {user, token} = useAuth();
+    const [name, setName] = useState(user.name|| "");
 
     useEffect(() => {
         const fetchVideo = async () => {
             setIsLoading(true);
             try {
                 const res = await fetch(`${API}/api/video/${vid}`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 const data = await res.json();
                 if (res.ok) {
@@ -75,7 +62,7 @@ function VideoPageEditor() {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ ticked }),
         })
@@ -96,7 +83,7 @@ function VideoPageEditor() {
         fetch(`${API}/api/video/${vid}/comments/${cid}`, {
             method: 'DELETE',
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                Authorization: `Bearer ${token}`,
             },
         })
             .then(res => res.json())
@@ -147,7 +134,7 @@ function VideoPageEditor() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ isPublic: newIsPublic }),
             });

@@ -2,23 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { FaUserPlus, FaTimes, FaTrash } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import PlanConfig from '../config/planConfig';
+import { useAuth } from '../context/authContext';
+import { useWorkspaceContext } from '../context/WorkspaceContext';
 
-function MembersPanel({ workspace }) {
+function MembersPanel({  }) {
+  const { wsid } = useParams();
+  const { workspaces } = useWorkspaceContext();
+  const [workspace, setWorkspace] = useState(null);
+  const [members, setMembers] = useState([]);
   const [showInvitePopup, setShowInvitePopup] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteCode, setInviteCode] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [members, setMembers] = useState(workspace?.members || []);
-  const { wsid } = useParams();
+  const { user, token } = useAuth();
+
   const API = import.meta.env.VITE_API_URL;
+  const currentUserId = user._id;
+  const userPlan = user.plan;
 
-  const currentUserId = localStorage.getItem("userId");
-  const userPlan = localStorage.getItem("plan");
-
+  // ✅ Sync workspace when context updates or wsid changes
   useEffect(() => {
-    setMembers(workspace?.members || []);
-  }, [workspace]);
+    const current = workspaces.find((ws) => ws._id === wsid);
+    setWorkspace(current || null);
+    setMembers(current?.members || []);
+  }, [workspaces, wsid]);
 
   const handleGenerateInvite = async () => {
     const maxAllowed = PlanConfig[userPlan].maxMembersPerWorkspace;
@@ -37,16 +45,16 @@ function MembersPanel({ workspace }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ email: inviteEmail, wsid })
+        body: JSON.stringify({ email: inviteEmail, wsid }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       setInviteCode(data.code);
     } catch (err) {
-      setError(err.message || err.error);
+      setError(err.message || "Error sending invite.");
     } finally {
       setLoading(false);
     }
@@ -54,18 +62,20 @@ function MembersPanel({ workspace }) {
 
   const handleRemoveMember = async (memberId) => {
     if (!window.confirm("Are you sure you want to remove this member?")) return;
+
     try {
       const res = await fetch(`${API}/api/workspace/${workspace._id}/remove-member`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ memberId }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
+
       setMembers((prev) => prev.filter((m) => m._id !== memberId));
     } catch (err) {
       alert(err.message);
@@ -80,7 +90,10 @@ function MembersPanel({ workspace }) {
 
       {members.length > 0 ? (
         members.map((m) => (
-          <div key={m._id} className="bg-zinc-700 flex items-center justify-between px-4 py-2 rounded mb-2 text-sm">
+          <div
+            key={m._id}
+            className="bg-zinc-700 flex items-center justify-between px-4 py-2 rounded mb-2 text-sm"
+          >
             <span className="flex items-center gap-1">
               {m.name}
               {m._id === workspace?.creator?._id && (
@@ -102,7 +115,6 @@ function MembersPanel({ workspace }) {
         <p className="text-white/70 text-sm">No members yet</p>
       )}
 
-      {/* Only creator can add members */}
       {isCreator && (
         <div className="flex justify-center">
           <button

@@ -22,7 +22,7 @@ router.get("/", authMiddleware, async (req, res) => {
                 { members: req.user.userId },
             ],
         }).populate("members")
-            .populate("creator");
+            .populate("creator")
         res.json(workspaces);
     } catch (error) {
         console.error("Error fetching workspaces:", error);
@@ -225,7 +225,6 @@ router.post("/:id/remove-member", authMiddleware, async (req, res) => {
         const { memberId } = req.body;
         const userId = req.user.userId;
         const workspaceId = req.params.id;
-        console.log(req.params)
 
         const workspace = await Workspace.findById(workspaceId);
         if (!workspace) return res.status(404).json({ message: "Workspace not found" });

@@ -83,7 +83,7 @@ router.post('/login', async (req, res) => {
                 console.error("JWT Signing Error:", err);
                 return res.status(500).json({ message: "Token generation failed" });
             }
-            res.json({ token, name: user.name , userId: user._id, plan: user.plan, email: user.email});
+            res.json({ token, user});
         });
 
     } catch (err) {

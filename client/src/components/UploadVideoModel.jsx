@@ -7,52 +7,108 @@ import {
   FaCloudUploadAlt,
 } from "react-icons/fa";
 import PlanConfig from "../config/planConfig";
-import { useUpload } from "../context/UploadContext";
+import axios from "axios";
+import { useWorkspaceContext } from "../context/WorkspaceContext";
 
-function UploadVideoModal({ workspace, wsid, onClose, setVideos, handleUploadComplete }) {
+function UploadVideoModal({
+  onClose,
+  handleUploadComplete,
+  wsid,
+  workspace: externalWorkspace,
+  index = 0, // 👈 passed from App.jsx for stacking fix
+}) {
   const [videoFile, setVideoFile] = useState(null);
   const [isMinimized, setIsMinimized] = useState(false);
   const [localError, setLocalError] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadDone, setUploadDone] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
-  const { uploads, startUpload, cancelUpload } = useUpload();
-  const currentUpload = uploads.find((u) => u.file.name === videoFile?.name);
+  const { workspaces, setWorkspaces } = useWorkspaceContext();
 
-  const handleUpload = () => {
-    const plan = workspace.creator?.plan || "free";
-    const maxStorage =
-      PlanConfig[plan]?.storagePerWorkspace || 5 * 1024 ** 3;
+  const workspace =
+    externalWorkspace || workspaces.find((ws) => ws._id === wsid);
+
+  const handleUpload = async () => {
+    if (!workspace) {
+      setLocalError("Workspace not found.");
+      return;
+    }
+
+    const plan = workspace?.creator?.plan || "free";
+    const maxStorage = PlanConfig[plan]?.storagePerWorkspace || 5 * 1024 ** 3;
 
     if (workspace.storageUsed + videoFile.size > maxStorage) {
       setLocalError(`Storage limit exceeded for your "${plan}" plan.`);
       return;
     }
 
-    setLocalError(null);
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("video", videoFile);
+      formData.append("workspaceId", wsid);
 
-    startUpload({
-      file: videoFile,
-      wsid,
-      onComplete: (video) => {
-        handleUploadComplete(video, workspace);
-        setTimeout(() => onClose(), 1000);
-      },
-      onError: (msg) => setLocalError(msg),
-    });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/video/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          onUploadProgress: (e) => {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            setUploadProgress(percent);
+          },
+        }
+      );
+
+      setUploadProgress(100);
+      setUploadDone(true);
+
+      const uploadedVideo = res.data.video;
+
+      // ✅ Update workspace videos locally in context
+      setWorkspaces((prev) =>
+        prev.map((ws) =>
+          ws._id === wsid
+            ? {
+                ...ws,
+                storageUsed: ws.storageUsed + (uploadedVideo.fileSize || 0),
+                videos: ws.videos ? [...ws.videos, uploadedVideo] : [uploadedVideo],
+              }
+            : ws
+        )
+      );
+
+      handleUploadComplete?.(uploadedVideo, workspace);
+
+      setTimeout(() => onClose(), 1000);
+    } catch (err) {
+      console.error("Upload error:", err);
+      const msg = err.response?.data?.message || "Upload failed.";
+      setLocalError(msg);
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const cancelAndClose = () => {
-    if (currentUpload) {
-      cancelUpload(currentUpload.id);
-    }
-    onClose();
+  const cancelAndClose = () => onClose();
+
+  const minimizedStyle = {
+    position: "fixed",
+    bottom: `${16 + index * 88}px`, // ⬅️ stack each 88px apart
+    right: "16px",
+    zIndex: 50,
   };
 
   const containerClasses = isMinimized
-    ? "fixed bottom-4 right-4 z-50"
+    ? ""
     : "fixed inset-0 flex items-center justify-center z-50 bg-black/60";
 
   return (
-    <div className={containerClasses}>
+    <div className={containerClasses} style={isMinimized ? minimizedStyle : {}}>
       <div className="bg-zinc-900 rounded-lg shadow-xl border border-zinc-700 w-full max-w-md">
         {isMinimized ? (
           <div className="p-3 flex items-center gap-4">
@@ -61,10 +117,9 @@ function UploadVideoModal({ workspace, wsid, onClose, setVideos, handleUploadCom
               <p className="text-sm font-medium truncate">
                 {videoFile?.name || "Uploading..."}
               </p>
-
-              {currentUpload && (
+              {uploading && (
                 <>
-                  {currentUpload.progress === 100 && !currentUpload.done && (
+                  {uploadProgress === 100 && !uploadDone && (
                     <p className="text-xs text-orange-400 font-medium mt-1">
                       Processing...
                     </p>
@@ -72,7 +127,7 @@ function UploadVideoModal({ workspace, wsid, onClose, setVideos, handleUploadCom
                   <div className="relative w-full bg-zinc-700 rounded-full h-1.5 mt-1">
                     <div
                       className="bg-orange-500 h-1.5 rounded-full transition-all duration-300"
-                      style={{ width: `${currentUpload.progress}%` }}
+                      style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
                 </>
@@ -141,21 +196,18 @@ function UploadVideoModal({ workspace, wsid, onClose, setVideos, handleUploadCom
                 <p className="text-red-400 text-sm mb-2">{localError}</p>
               )}
 
-              {currentUpload && (
+              {uploading && (
                 <div className="mt-2">
-                  {currentUpload.progress === 100 &&
-                    !currentUpload.done && (
-                      <p className="text-sm text-orange-400 font-medium mb-1 text-center">
-                        Processing...
-                      </p>
-                    )}
-                  <p className="text-sm text-right mb-1">
-                    {currentUpload.progress}%
-                  </p>
+                  {uploadProgress === 100 && !uploadDone && (
+                    <p className="text-sm text-orange-400 font-medium mb-1 text-center">
+                      Processing...
+                    </p>
+                  )}
+                  <p className="text-sm text-right mb-1">{uploadProgress}%</p>
                   <div className="relative w-full bg-zinc-700 rounded-full h-2 overflow-hidden">
                     <div
                       className="bg-orange-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${currentUpload.progress}%` }}
+                      style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
                 </div>
@@ -170,7 +222,7 @@ function UploadVideoModal({ workspace, wsid, onClose, setVideos, handleUploadCom
                 </button>
                 <button
                   onClick={handleUpload}
-                  disabled={!videoFile || !!currentUpload}
+                  disabled={!videoFile || uploading}
                   className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:bg-zinc-700 disabled:text-zinc-400 font-semibold"
                 >
                   Upload

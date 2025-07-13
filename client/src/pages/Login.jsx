@@ -1,18 +1,22 @@
-// src/pages/Login.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
+import { useAuth } from "../context/authContext";
+import { useWorkspaceContext } from "../context/WorkspaceContext";
 
 const API = import.meta.env.VITE_API_URL;
 
-function Login({ setIsAuthenticated }) {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const navigate = useNavigate();
+  const {login} = useAuth();
+  const { setWorkspaces } = useWorkspaceContext();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -27,20 +31,15 @@ function Login({ setIsAuthenticated }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // Save token & username in localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("name", data.username); // Use 'name' not 'username' if your backend returns that
-      localStorage.setItem("userId", data.userId); // Use 'name' not 'username' if your backend returns that
-      localStorage.setItem("plan", data.plan); // Use 'name' not 'username' if your backend returns that
-
-      setIsAuthenticated(true);
-
-      // Redirect based on available workspace
-      const workspaceRes = await fetch(`${API}/api/workspace`, {
-        headers: { Authorization: `Bearer ${data.token}` },
+      const { user, token } = data;
+      login(token,user)
+      const wsRes = await fetch(`${API}/api/workspace`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const workspaces = await workspaceRes.json();
+      const workspaces = await wsRes.json();
+      if (!wsRes.ok) throw new Error(workspaces.message || "Failed to fetch workspaces");
+      setWorkspaces(workspaces);
       if (Array.isArray(workspaces) && workspaces.length > 0) {
         navigate(`/workspace/${workspaces[0]._id}`);
       } else {
@@ -63,7 +62,7 @@ function Login({ setIsAuthenticated }) {
 
           {error && <p className="text-sm text-red-500 text-center mb-4">{error}</p>}
 
-          <form onSubmit={handleLogin} className="space-y-4 text-sm">
+          <form onSubmit={handleSubmit} className="space-y-4 text-sm">
             <input
               type="email"
               placeholder="Email"
@@ -103,7 +102,6 @@ function Login({ setIsAuthenticated }) {
           </p>
         </div>
       </main>
-
       <Footer />
     </div>
   );

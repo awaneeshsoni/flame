@@ -1,17 +1,21 @@
-// src/pages/Signup.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
+import { useAuth } from "../context/authContext";
+import { useWorkspaceContext } from "../context/WorkspaceContext";
 
 const API = import.meta.env.VITE_API_URL;
 
-function Signup({ setIsAuthenticated }) {
+function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const { setWorkspaces } = useWorkspaceContext();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -24,23 +28,19 @@ function Signup({ setIsAuthenticated }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Signup failed");
-
-      // Save token & name in localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("name", data.name); // depends on your backend return
-
-      setIsAuthenticated(true);
-
-      // After signup, check for workspaces
-      const workspaceRes = await fetch(`${API}/api/workspace`, {
-        headers: { Authorization: `Bearer ${data.token}` },
+      const { user, token } = data;
+      login(token,user);
+      const wsRes = await fetch(`${API}/api/workspace`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      const workspaces = await workspaceRes.json();
-
-      if (Array.isArray(workspaces) && workspaces.length > 0) {
+      const workspaces = await wsRes.json();
+      if (!wsRes.ok) throw new Error(workspaces.message || "Failed to fetch workspaces");
+      setWorkspaces(workspaces);
+      if (workspaces.length > 0) {
         navigate(`/workspace/${workspaces[0]._id}`);
       } else {
         navigate("/dashboard");
@@ -54,17 +54,13 @@ function Signup({ setIsAuthenticated }) {
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col">
-      {/* <NavbarHome /> */}
-
       <main className="flex flex-1 flex-col items-center justify-center p-6">
         <div className="w-full max-w-md bg-black border border-white/10 p-8 rounded-md shadow-lg">
           <h2 className="text-2xl font-semibold text-center mb-6">
             Create an <span className="text-orange-600">Account</span>
           </h2>
 
-          {error && (
-            <p className="text-sm text-red-500 mb-4 text-center">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-500 mb-4 text-center">{error}</p>}
 
           <form onSubmit={handleSignup} className="space-y-4 text-sm">
             <input
@@ -114,7 +110,6 @@ function Signup({ setIsAuthenticated }) {
           </p>
         </div>
       </main>
-
       <Footer />
     </div>
   );

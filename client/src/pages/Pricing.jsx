@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
+import { useAuth } from "../context/authContext";
 
 const plans = [
     {
@@ -10,40 +11,60 @@ const plans = [
         features: [
             "1 Workspace",
             "Upto 2 GB reusable cloud Storage",
-            "Up to 3 Members per Workspace",
+            "Up to 1 Members per Workspace",
         ],
         cta: "Start for Free",
+        url: "/login",
     },
     {
         name: "Pro",
         id: "pro",
-        price: "$29/mo",
+        price: "$21/mo",
         description: "Great for small teams who need more storage and control.",
         features: [
             "3 Workspaces",
-            "10GB reusable cloud  storage per workspace",
+            "30GB reusable cloud  storage per workspace",
             "Up to 5 Members per Workspace",
             "Priority Support",
         ],
         cta: "Upgrade to Pro",
+        url: "https://flameiio.lemonsqueezy.com/buy/eeb75cab-4abb-4519-8e97-46bf769d82a1", // 🔁 Replace with actual Lemon URL
     },
     {
         name: "Business",
         id: "business",
-        price: "$99/mo",
+        price: "$51/mo",
         description: "Built for growing teams and professional use cases.",
         features: [
             "5 Workspaces",
-            "20GB reusable cloud storage per workspace",
+            "100GB reusable cloud storage per workspace",
             "Up to 10 Members per Workspace",
             "Advanced Collaboration Tools",
             "Premium Support",
         ],
         cta: "Go Business",
+        url: "https://flameiio.lemonsqueezy.com/buy/c36f7d53-375c-4964-94ab-ec8ea114c080", // 🔁 Replace with actual Lemon URL
     },
-];
+]; 
 
 export default function Pricing() {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    const handleClick = (plan) => {
+        if (plan.id === "free") {
+            navigate("/login");
+            return;
+        }
+
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+
+        window.location.href = plan.url;
+    };
+
     return (
         <div className="bg-black text-white min-h-screen py-4 px-4">
             <div className="max-w-5xl mx-auto text-center mb-10">
@@ -70,12 +91,12 @@ export default function Pricing() {
                                 </ul>
                             </div>
 
-                            <Link
-                                to={plan.id === "free" ? "/login" : `/checkout?plan=${plan.id}`}
+                            <button
+                                onClick={() => handleClick(plan)}
                                 className="mt-auto bg-orange-600 hover:bg-orange-700 text-white py-2 rounded-md font-semibold text-sm transition"
                             >
                                 {plan.cta}
-                            </Link>
+                            </button>
                         </div>
                     ))}
                 </div>

@@ -1,23 +1,24 @@
-// src/components/CreateWorkspaceModal.jsx
-
 import { useState } from "react";
-import { FaTimes, FaSpinner } from "react-icons/fa"; // Import necessary icons
+import { FaTimes, FaSpinner } from "react-icons/fa";
+import { useWorkspaceContext } from "../context/WorkspaceContext";
 import PlanConfig from "../config/planConfig";
 
 const API = import.meta.env.VITE_API_URL;
 
-function CreateWorkspaceModal({ setShowModal, setWorkspaces,currentPlan, workspaces }) {
+function CreateWorkspaceModal({ setShowModal, currentPlan }) {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const { workspaces, setWorkspaces } = useWorkspaceContext();
 
   const handleCreate = async () => {
     if (!name.trim()) {
       setError("Workspace name is required.");
       return;
     }
-    const limit = PlanConfig[currentPlan]?.maxWorkspaces;
 
+    const limit = PlanConfig[currentPlan]?.maxWorkspaces;
     if (workspaces.length >= limit) {
       setError(`You've reached your limit of ${limit} workspaces. Please upgrade your plan.`);
       return;
@@ -40,6 +41,7 @@ function CreateWorkspaceModal({ setShowModal, setWorkspaces,currentPlan, workspa
       if (!res.ok) throw new Error(data.message || "Failed to create workspace.");
 
       setWorkspaces((prev) => [...prev, data]);
+
       setShowModal(false);
     } catch (err) {
       setError(err.message);
@@ -47,19 +49,16 @@ function CreateWorkspaceModal({ setShowModal, setWorkspaces,currentPlan, workspa
       setLoading(false);
     }
   };
-  
-  // Handle Enter key submission
+
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !loading) {
+    if (e.key === "Enter" && !loading) {
       handleCreate();
     }
   };
 
   return (
-    // Main overlay with a semi-transparent background
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
       <div className="bg-zinc-900 rounded-lg shadow-xl border border-zinc-700 w-full max-w-md">
-        {/* --- Modal Header --- */}
         <div className="flex justify-between items-center p-4 border-b border-zinc-700">
           <h2 className="text-lg font-bold">Create New Workspace</h2>
           <button
@@ -71,7 +70,6 @@ function CreateWorkspaceModal({ setShowModal, setWorkspaces,currentPlan, workspa
           </button>
         </div>
 
-        {/* --- Modal Body --- */}
         <div className="p-6">
           {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
@@ -103,11 +101,7 @@ function CreateWorkspaceModal({ setShowModal, setWorkspaces,currentPlan, workspa
             onClick={handleCreate}
             disabled={loading || !name.trim()}
           >
-            {loading ? (
-              <FaSpinner className="animate-spin" />
-            ) : (
-              "Create"
-            )}
+            {loading ? <FaSpinner className="animate-spin" /> : "Create"}
           </button>
         </div>
       </div>
