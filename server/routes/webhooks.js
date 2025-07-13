@@ -8,17 +8,12 @@ const router = express.Router();
 
 router.post('/lemonsqueezy', async (req, res) => {
     const secret = process.env.LEMON_WEBHOOK_SECRET;
-    const signature = req.headers["x-signature"];
+    const hmac = crypto.createHmac('sha256', secret);
+    const digest = Buffer.from(hmac.update(request.rawBody).digest('hex'), 'utf8');
+    const signature = Buffer.from(request.get('X-Signature') || '', 'utf8');
 
-    const rawBody = req.body; // buffer
-    const expectedSig = crypto
-        .createHmac("sha256", secret)
-        .update(rawBody)
-        .digest("hex");
-
-    if (signature !== expectedSig) {
-        console.warn("⚠️ Invalid Lemon Squeezy signature");
-        return res.status(401).send("Invalid signature");
+    if (!crypto.timingSafeEqual(digest, signature)) {
+        throw new Error('Invalid signature.');
     }
 
     try {
