@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
+const API = import.meta.env.VITE_API_URL;
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -8,14 +9,35 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser)); 
-    }
-    setLoading(false);
+    const fetchUser = async () => {
+      const storedToken = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
+      if (storedToken && storedUser) {
+        try {
+          const res = await fetch(`${API}/api/auth/verify-token`, {
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            },
+          });
+
+          if (!res.ok) {
+            throw new Error("Failed to fetch user");
+          }
+          const data = await res.json();
+          setToken(storedToken);
+          setUser(data.user);
+        } catch (err) {
+          console.error("Error fetching user:", err);
+          logout(); 
+
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchUser();
   }, []);
+
 
   const login = (token, user) => {
     localStorage.setItem("token", token);

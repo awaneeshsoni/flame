@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 const API = import.meta.env.VITE_API_URL;
 
 export default function Profile() {
-  const { user, setUser, token } = useAuth(); // ✅ get from context
+  const { user, setUser, token } = useAuth(); 
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     name: user?.name || "",

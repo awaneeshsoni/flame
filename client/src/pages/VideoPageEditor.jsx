@@ -22,7 +22,6 @@ function VideoPageEditor() {
     const [shareUrl, setShareUrl] = useState("");
     const {workspaces, setWorkspaces} = useWorkspaceContext();
     const [selectedWorkspaceName, setSelectedWorkspaceName] = useState("");
-    const navigate = useNavigate();
     const [createWorkspace, setCreateWorkspace] = useState(false);
     const {user, token} = useAuth();
     const [name, setName] = useState(user.name|| "");

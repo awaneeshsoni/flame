@@ -5,7 +5,7 @@ import PlanConfig from '../config/planConfig';
 import { useAuth } from '../context/authContext';
 import { useWorkspaceContext } from '../context/WorkspaceContext';
 
-function MembersPanel({  }) {
+function MembersPanel() {
   const { wsid } = useParams();
   const { workspaces } = useWorkspaceContext();
   const [workspace, setWorkspace] = useState(null);
@@ -21,11 +21,10 @@ function MembersPanel({  }) {
   const currentUserId = user._id;
   const userPlan = user.plan;
 
-  // ✅ Sync workspace when context updates or wsid changes
   useEffect(() => {
     const current = workspaces.find((ws) => ws._id === wsid);
     setWorkspace(current || null);
-    setMembers(current?.members || []);
+    setMembers(current.members);
   }, [workspaces, wsid]);
 
   const handleGenerateInvite = async () => {

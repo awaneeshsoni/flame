@@ -19,6 +19,7 @@ const plans = [
     {
         name: "Pro",
         id: "pro",
+        variantId: "895944",
         price: "$21/mo",
         description: "Great for small teams who need more storage and control.",
         features: [
@@ -28,10 +29,12 @@ const plans = [
             "Priority Support",
         ],
         cta: "Upgrade to Pro",
-        url: "https://flameiio.lemonsqueezy.com/buy/eeb75cab-4abb-4519-8e97-46bf769d82a1", // 🔁 Replace with actual Lemon URL
+        // url: "https://flameiio.lemonsqueezy.com/buy/c3184bbb-1dc2-401e-ad12-cb41b49b177a", // 🔁 Replace with actual Lemon URL
+        // url: "https://flameiio.lemonsqueezy.com/buy/eeb75cab-4abb-4519-8e97-46bf769d82a1", // 🔁 Replace with actual Lemon URL
     },
     {
         name: "Business",
+        variantId: "898697",
         id: "business",
         price: "$51/mo",
         description: "Built for growing teams and professional use cases.",
@@ -45,13 +48,13 @@ const plans = [
         cta: "Go Business",
         url: "https://flameiio.lemonsqueezy.com/buy/c36f7d53-375c-4964-94ab-ec8ea114c080", // 🔁 Replace with actual Lemon URL
     },
-]; 
+];
 
 export default function Pricing() {
+    const API = import.meta.env.VITE_API_URL;
     const { user } = useAuth();
     const navigate = useNavigate();
-
-    const handleClick = (plan) => {
+    const handleClick = async (plan) => {
         if (plan.id === "free") {
             navigate("/login");
             return;
@@ -62,9 +65,45 @@ export default function Pricing() {
             return;
         }
 
-        window.location.href = plan.url;
-    };
+        try {
+            const res = await fetch(`${API}/api/user/create-checkout`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    variantId: plan.variantId,
+                    userId: user._id,
+                    email: user.email
+                })
+            });
 
+            // --- THIS IS THE FIX ---
+            // First, check if the request itself was successful (e.g., status 200 OK)
+            if (!res.ok) {
+                // If not, get the error message from our backend
+                const errorData = await res.json();
+                // Throw an error to be caught by the catch block
+                throw new Error(errorData.error || 'Failed to create checkout session.');
+            }
+            // --- END OF FIX ---
+
+            // This line will only run if res.ok was true
+            const { url } = await res.json();
+
+            // Add a safety check here too, just in case
+            if (!url) {
+                throw new Error("Checkout URL was not returned from the server.");
+            }
+
+            window.location.href = url;
+
+        } catch (err) {
+            // Now this catch block will have a much more useful error message!
+            console.error("Checkout error:", err.message);
+            alert(`Something went wrong: ${err.message}`);
+        }
+    };
     return (
         <div className="bg-black text-white min-h-screen py-4 px-4">
             <div className="max-w-5xl mx-auto text-center mb-10">

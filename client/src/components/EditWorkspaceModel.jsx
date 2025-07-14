@@ -75,7 +75,7 @@ function EditWorkspaceModal({ workspace, setShowModal, setWorkspaces }) {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
       <div className="bg-zinc-900 rounded-lg shadow-xl border border-zinc-700 w-full max-w-md">
-        {/* Header */}
+        
         <div className="flex justify-between items-center p-4 border-b border-zinc-700">
           <h2 className="text-lg font-bold">Edit Workspace</h2>
           <button
@@ -87,7 +87,7 @@ function EditWorkspaceModal({ workspace, setShowModal, setWorkspaces }) {
           </button>
         </div>
 
-        {/* Body */}
+        
         <div className="p-6">
           {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
@@ -104,7 +104,7 @@ function EditWorkspaceModal({ workspace, setShowModal, setWorkspaces }) {
           />
         </div>
 
-        {/* Footer */}
+        
         <div className="flex justify-between items-center p-4 bg-zinc-800/50 rounded-b-lg">
           <button
             onClick={handleDelete}

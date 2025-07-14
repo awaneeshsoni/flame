@@ -15,7 +15,7 @@ if (!process.env.JWT_SECRET) {
 router.get("/verify-token", authMiddleware, async (req, res) => {
   const user = await User.findById(req.user.userId);
   if (!user) return res.status(401).json({ message: "Invalid token" });
-  res.json({ name: user.name});
+  res.json({ user});
 });
 
 router.post('/signup', async (req, res) => {

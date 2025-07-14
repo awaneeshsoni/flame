@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import PlanConfig from '../config/planConfig';
 import JoinWithCode from './JoinWithCode';
 import { useWorkspaceContext } from '../context/WorkspaceContext';
+import { useAuth } from '../context/authContext';
 
 function formatBytes(bytes) {
   const sizes = ['B', 'KB', 'MB', 'GB'];
@@ -10,9 +11,9 @@ function formatBytes(bytes) {
   return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${sizes[i]}`;
 }
 
-
 function WorkspaceSidebar({ currentWorkspaceId, onCreateClick }) {
   const { workspaces } = useWorkspaceContext();
+  const {user} = useAuth();
   const navigate = useNavigate();
   return (
     <aside className="hidden lg:block w-72 bg-zinc-900 p-6 border-r border-white/10 flex-shrink-0">
@@ -29,9 +30,8 @@ function WorkspaceSidebar({ currentWorkspaceId, onCreateClick }) {
       <div className="space-y-2">
         {workspaces.map((ws) => {
           const isActive = ws._id === currentWorkspaceId;
-          const plan = ws.creator?.plan || 'free';
           const used = ws.storageUsed || 0;
-          const limit = PlanConfig[plan].storagePerWorkspace;
+          const limit = PlanConfig[user.plan].storagePerWorkspace;
 
           return (
             <div key={ws._id} className="space-y-1">

@@ -51,7 +51,6 @@ function CommentsSection({
                             key={c._id}
                             className="relative p-3 bg-zinc-800 rounded-md group hover:bg-zinc-700"
                         >
-                            {/* ✅ Tick icon (top-right) */}
                             <button
                                 onClick={() => onToggleTick(c._id, !c.ticked)}
                                 title="Mark as done"
@@ -64,13 +63,11 @@ function CommentsSection({
                                 />
                             </button>
 
-                            {/* Name & Date */}
                             <p className="text-sm font-bold text-white">{c.name || "Unknown"}</p>
                             <p className="text-xs text-gray-400 mb-1">
                                 {formatDateTime(c.date)}
                             </p>
 
-                            {/* Comment Text */}
                             <p
                                 className="text-white text-sm break-words cursor-pointer"
                                 onClick={() => onCommentClick(c.timestamp)}
@@ -78,7 +75,6 @@ function CommentsSection({
                                 {c.text || "No comment text"}
                             </p>
 
-                            {/* Timestamp & Delete */}
                             <div className="flex justify-between items-center mt-2">
                                 <p className="text-xs text-gray-400">
                                     ⏳ {c.timestamp !== undefined ? `${parseFloat(c.timestamp).toFixed(2)}s` : "—"}

@@ -49,7 +49,7 @@ function JoinWithCode() {
                 Join with Code
             </button>
 
-            {/* Floating Popup */}
+            
             {showJoinPopup && (
                 <div className="absolute top-14 right-0 w-60 z-50 p-4 border border-zinc-600 rounded bg-zinc-800 shadow-lg text-sm">
 

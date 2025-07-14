@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaTimes, FaSpinner } from "react-icons/fa";
 import { useWorkspaceContext } from "../context/WorkspaceContext";
 import PlanConfig from "../config/planConfig";
+import { useAuth } from "../context/authContext";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -9,6 +10,7 @@ function CreateWorkspaceModal({ setShowModal, currentPlan }) {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const {user, token} = useAuth();
 
   const { workspaces, setWorkspaces } = useWorkspaceContext();
 
@@ -18,7 +20,7 @@ function CreateWorkspaceModal({ setShowModal, currentPlan }) {
       return;
     }
 
-    const limit = PlanConfig[currentPlan]?.maxWorkspaces;
+    const limit = PlanConfig[user.plan]?.maxWorkspaces;
     if (workspaces.length >= limit) {
       setError(`You've reached your limit of ${limit} workspaces. Please upgrade your plan.`);
       return;
@@ -32,16 +34,14 @@ function CreateWorkspaceModal({ setShowModal, currentPlan }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to create workspace.");
-
       setWorkspaces((prev) => [...prev, data]);
-
       setShowModal(false);
     } catch (err) {
       setError(err.message);
