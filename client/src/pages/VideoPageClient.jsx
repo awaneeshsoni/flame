@@ -12,12 +12,22 @@ function VideoPageClient() {
     const [video, setVideo] = useState(null);
     const [comments, setComments] = useState([]);
     const [commentText, setCommentText] = useState("");
-    const [name, setName] = useState( user.name || "");
+    // const [name, setName] = useState(user.name || "");
+    const [name, setName] = useState(() => {
+        const storedClientName = localStorage.getItem("clientName");
+        return user?.name || storedClientName || "";
+    });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const videoRef = useRef(null);
 
     useEffect(() => {
+        if (!user && name) {
+            localStorage.setItem("clientName", name);
+        }
+    }, [name]);
+    useEffect(() => {
+
         const fetchVideo = async () => {
             try {
                 const res = await fetch(`${API}/api/video/share/${id}`);

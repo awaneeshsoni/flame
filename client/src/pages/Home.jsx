@@ -92,6 +92,11 @@ const Home = () => {
           <div className="space-y-24">
             {[
               {
+                title: "Simple for Clients",
+                desc: "No complicated tools. Everything works in the browser, even for non-tech-savvy clients.",
+                img: "https://pub-53811a87b70948d3b472a354aefe49fb.r2.dev/Screenshot%202025-07-23%20191044.png",
+              },
+              {
                 title: "Precision Feedback with Time-Stamping",
                 desc: "Clients click on the video timeline to leave specific, easy-to-understand comments.",
                 img: "https://pub-53811a87b70948d3b472a354aefe49fb.r2.dev/Screenshot%202025-07-23%20180316.png",
@@ -101,11 +106,6 @@ const Home = () => {
                 desc: "Invite your team to a workspace and collaborate on video projects seamlessly via invite code.",
                 img: "https://pub-53811a87b70948d3b472a354aefe49fb.r2.dev/Screenshot%202025-07-23%20182159.png",
               },
-              // {
-              //   title: "Simple for Clients",
-              //   desc: "No complicated tools. Everything works in the browser, even for non-tech-savvy clients.",
-              //   img: "https://your-cdn.com/simple-client.png",
-              // },
             ].map((feature, i) => (
               <div
                 key={i}
