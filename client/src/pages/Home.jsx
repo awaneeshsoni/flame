@@ -22,17 +22,26 @@ const Home = () => {
             Try Flame For Free
           </Link>
 
-          <div className="mt-16">
+          {/* <div className="mt-16">
             <img
-              src={logo}
-              alt="Flame Hero"
-              className="w-full max-w-md mx-auto rounded-md shadow-2xl"
+              src="https://pub-53811a87b70948d3b472a354aefe49fb.r2.dev/Screenshot%202025-07-23%20180316.png"
+              alt="Flameio logo"
+              className="w-full mx-auto rounded-sm shadow-2xl p-2 md:p-4 bg-white/30"
             />
+          </div> */}
+          <div className="w-full mt-16">
+            <div className="rounded-sm border border-white/20 bg-white/10 backdrop-blur-lg shadow-xl overflow-hidden">
+              <img
+                src="https://pub-53811a87b70948d3b472a354aefe49fb.r2.dev/Screenshot%202025-07-23%20180316.png"
+                alt="hero image"
+                className="w-full h-auto object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      
+
       <section className="py-16 px-6 bg-black border-t border-white/10">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-4">Tired of Endless Feedback Revisions?</h2>
@@ -42,7 +51,7 @@ const Home = () => {
         </div>
       </section>
 
-      
+
       <section className="py-16 px-6 bg-black">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-4">
@@ -54,7 +63,7 @@ const Home = () => {
         </div>
       </section>
 
-      
+
       <section className="py-20 px-6 bg-black border-t border-white/10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-12">Why Editors Love <span className="text-orange-600">Flame</span></h2>
@@ -64,7 +73,6 @@ const Home = () => {
               ["Streamlined Communication", "All feedback in one place. No scattered messages."],
               ["Faster Revisions", "Clear feedback means faster turnaround times."],
               ["Easy to Use", "No learning curve. Just clarity and control."],
-              ["Secure and Private", "Your videos and feedback stay confidential."],
             ].map(([title, desc], i) => (
               <div key={i}>
                 <FaCheckCircle className="text-orange-600 text-lg mb-2" />
@@ -76,27 +84,54 @@ const Home = () => {
         </div>
       </section>
 
-      
-      <section className="py-20 px-6 bg-black">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-semibold mb-12">Flame Features</h2>
-          <div className="space-y-16">
+
+      <section className="py-20 px-6 bg-black text-white">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-4xl font-bold mb-16">Flame Features</h2>
+
+          <div className="space-y-24">
             {[
-              ["Precision Feedback with Time-Stamping", "Clients click on video timeline to leave specific, easy-to-understand comments."],
-              ["Organized Version History", "Upload new video versions and organize feedback by each."],
-              ["Simple for Clients", "No complicated tools. Everything works in the browser."],
-            ].map(([title, desc], i) => (
-              <div key={i} className="flex flex-col items-center">
-                <img src={logo} alt="Feature" className="w-full max-w-sm rounded-md shadow-md mb-4" />
-                <h3 className="text-lg font-medium mb-2">{title}</h3>
-                <p className="text-sm text-white/70">{desc}</p>
+              {
+                title: "Precision Feedback with Time-Stamping",
+                desc: "Clients click on the video timeline to leave specific, easy-to-understand comments.",
+                img: "https://pub-53811a87b70948d3b472a354aefe49fb.r2.dev/Screenshot%202025-07-23%20180316.png",
+              },
+              {
+                title: "Invite Team Members",
+                desc: "Invite your team to a workspace and collaborate on video projects seamlessly via invite code.",
+                img: "https://pub-53811a87b70948d3b472a354aefe49fb.r2.dev/Screenshot%202025-07-23%20182159.png",
+              },
+              // {
+              //   title: "Simple for Clients",
+              //   desc: "No complicated tools. Everything works in the browser, even for non-tech-savvy clients.",
+              //   img: "https://your-cdn.com/simple-client.png",
+              // },
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16"
+              >
+                <div className="w-full lg:w-1/2">
+                  <div className="rounded-sm border border-white/20 bg-white/10 backdrop-blur-lg shadow-xl overflow-hidden">
+                    <img
+                      src={feature.img}
+                      alt={feature.title}
+                      className="w-full h-auto object-cover"
+                    />
+                  </div>
+                </div>
+                <div className="w-full lg:w-1/2 text-center lg:text-left">
+                  <h3 className="text-2xl font-semibold mb-4">{feature.title}</h3>
+                  <p className="text-base text-white/70">{feature.desc}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      
+
+
       <section className="py-20 px-6 bg-black border-t border-white/10 text-center">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-semibold mb-4">

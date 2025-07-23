@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
           const data = await res.json();
           setToken(storedToken);
           setUser(data.user);
+          setLoading(false);
         } catch (err) {
           console.error("Error fetching user:", err);
           logout(); 

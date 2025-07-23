@@ -57,7 +57,7 @@ router.post('/create-checkout', async (req, res) => {
         custom: { userId: userId },
       },
       productOptions: {
-        redirectUrl: `${process.env.APP_URL}/success`,
+        redirectUrl: `${process.env.APP_URL}/dashboard`,
       },
       checkoutOptions: {
         dark: true,
@@ -66,10 +66,7 @@ router.post('/create-checkout', async (req, res) => {
     if (checkout.error) {
       throw new Error(JSON.stringify(checkout.error));
     }
-
     const checkoutUrl = checkout.data.data.attributes.url;
-
-    console.log("Successfully created checkout URL:", checkoutUrl);
     res.json({ url: checkoutUrl });
 
   } catch (err) {
@@ -77,4 +74,5 @@ router.post('/create-checkout', async (req, res) => {
     res.status(500).json({ error: 'Failed to create checkout via SDK.', details: err.message });
   }
 });
+
 export default router;

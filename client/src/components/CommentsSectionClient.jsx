@@ -28,7 +28,7 @@ function ClientCommentsSection({
                 <span className="mr-2 opacity-50 text-sm">Name:</span>
                 <input
                     type="text"
-                    value={name}
+                    value={name || ''}
                     onChange={(e) => setName(e.target.value)}
                     className="bg-transparent border-none outline-none flex-1 text-white text-sm"
                 />

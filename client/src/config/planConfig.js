@@ -7,12 +7,12 @@ const PlanConfig = {
   },
   pro: {
     maxWorkspaces: 3,
-    storagePerWorkspace: 10 * 1024 * 1024 * 1024, // total 30GB
+    storagePerWorkspace: 30 * 1024 * 1024 * 1024, // total 90GB
     maxMembersPerWorkspace: 5,
   },
   business: {
     maxWorkspaces: 5,
-    storagePerWorkspace: 20 * 1024 * 1024 * 1024, // total 100GB
+    storagePerWorkspace: 100 * 1024 * 1024 * 1024, // total 1000GB
     maxMembersPerWorkspace: 10,
   }
 };

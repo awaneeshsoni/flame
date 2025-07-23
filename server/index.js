@@ -25,7 +25,13 @@ const connectDB = async () => {
 connectDB(); 
 
 const corsOptions = {
-    origin: ['https://flameio.vercel.app','https://flame-lemon.vercel.app', 'http://localhost:5173', 'https://flameio.contentarc.co', 'https://flame.contentarc.co', 'https://flameio.com', 'https://www.flameio.com'],  
+    origin: ['https://flameio.vercel.app',
+        'https://flame-lemon.vercel.app', 
+        'http://localhost:5173', 
+        'https://flameio.contentarc.co', 
+        'https://flame.contentarc.co', 
+        'https://flameio.com', 
+        'https://www.flameio.com'],  
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true 
